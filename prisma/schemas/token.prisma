@@ -1,0 +1,12 @@
+model Token {
+  id                      String   @id @default(uuid())
+  address                 String   @unique
+  symbol                  String
+  name                    String
+  decimals                Int
+  isVerified              Boolean  @default(false)
+  freezeAuthorityDisabled DateTime @default(now())
+
+  poolAsX Pool[] @relation("TokenX")
+  poolAsY Pool[] @relation("TokenY")
+}

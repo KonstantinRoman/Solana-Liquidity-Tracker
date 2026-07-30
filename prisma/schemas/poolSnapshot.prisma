@@ -1,0 +1,29 @@
+model PoolSnapshot {
+  id     String @id @default(uuid())
+  poolId String
+  pool   Pool   @relation(fields: [poolId], references: [id], onDelete: Cascade)
+
+  tvl          Float
+  currentPrice Float
+  apr          Float?
+  apy          Float?
+
+  tokenXAmount Float?
+  tokenYAmount Float?
+
+  vol30m Float?
+  vol1h  Float?
+  vol24h Float?
+
+  feels30m Float?
+  feels1h  Float?
+  feels24h Float?
+
+  feeTvl24h Float?
+
+  rawMetrics Json?
+
+  createAt DateTime @default(now())
+
+  @@index([poolId, createAt])
+}

@@ -1,0 +1,21 @@
+model Pool {
+  id            String  @id @default(uuid())
+  address       String  @unique
+  name          String
+  dex           String  @default("Meteora")
+  isBlacklisted Boolean @default(false)
+
+  tokenXId String
+  tokenX   Token  @relation("TokenX", fields: [tokenXId], references: [id])
+  tokenYId String
+  tokenY   Token  @relation("TokenY", fields: [tokenYId], references: [id])
+
+  config Json?
+
+  createAt  DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  snapshots PoolSnapshot[]
+
+  @@index([address])
+}
