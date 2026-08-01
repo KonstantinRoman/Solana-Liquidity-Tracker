@@ -1,0 +1,99 @@
+{
+  "current_page": 1,
+  "data": [
+    {
+      "address": "<string>",
+      "apr": 123,
+      "apy": 123,
+      "created_at": 1,
+      "cumulative_metrics": {
+        "fees": 123,
+        "volume": 123
+      },
+      "current_price": 123,
+      "dynamic_fee_pct": 123,
+      "farm_apr": 123,
+      "farm_apy": 123,
+      "fee_tvl_ratio": {
+        "12h": 123,
+        "1h": 123,
+        "24h": 123,
+        "2h": 123,
+        "30m": 123,
+        "4h": 123
+      },
+      "fees": {
+        "12h": 123,
+        "1h": 123,
+        "24h": 123,
+        "2h": 123,
+        "30m": 123,
+        "4h": 123
+      },
+      "has_farm": true,
+      "is_blacklisted": true,
+      "name": "<string>",
+      "pool_config": {
+        "base_fee_pct": 123,
+        "bin_step": 1,
+        "collect_fee_mode": 1,
+        "max_fee_pct": 123,
+        "protocol_fee_pct": 123
+      },
+      "protocol_fees": {
+        "12h": 123,
+        "1h": 123,
+        "24h": 123,
+        "2h": 123,
+        "30m": 123,
+        "4h": 123
+      },
+      "reserve_x": "<string>",
+      "reserve_y": "<string>",
+      "reward_mint_x": "<string>",
+      "reward_mint_y": "<string>",
+      "tags": [
+        "<string>"
+      ],
+      "token_x": {
+        "address": "<string>",
+        "decimals": 1,
+        "freeze_authority_disabled": true,
+        "holders": 123,
+        "is_verified": true,
+        "market_cap": 123,
+        "name": "<string>",
+        "price": 123,
+        "symbol": "<string>",
+        "total_supply": 123
+      },
+      "token_x_amount": 123,
+      "token_y": {
+        "address": "<string>",
+        "decimals": 1,
+        "freeze_authority_disabled": true,
+        "holders": 123,
+        "is_verified": true,
+        "market_cap": 123,
+        "name": "<string>",
+        "price": 123,
+        "symbol": "<string>",
+        "total_supply": 123
+      },
+      "token_y_amount": 123,
+      "tvl": 123,
+      "volume": {
+        "12h": 123,
+        "1h": 123,
+        "24h": 123,
+        "2h": 123,
+        "30m": 123,
+        "4h": 123
+      },
+      "launchpad": "<string>"
+    }
+  ],
+  "page_size": 1,
+  "pages": 1,
+  "total": 1
+}
