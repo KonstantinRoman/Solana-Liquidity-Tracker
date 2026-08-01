@@ -3,7 +3,7 @@ import { z } from 'zod'
 const cumulativeMetricsSchema = z.object({
   fees: z.number(), 
   volume: z.number(),
-});
+})
 
 const feesAndVolumeSchema = z.object({
   '12h': z.number(), 
@@ -12,7 +12,7 @@ const feesAndVolumeSchema = z.object({
   '2h': z.number(),
   '30m': z.number(),
   '4h': z.number(),
-});
+})
 
 const poolConfigSchema = z.object({
   base_fee_pct: z.number(),
@@ -20,7 +20,7 @@ const poolConfigSchema = z.object({
   collect_fee_mode: z.number(), 
   max_fee_pct: z.number(),
   protocol_fee_pct: z.number(),
-});
+})
 
 const tokenSchema = z.object({
   address: z.string(),
@@ -33,7 +33,7 @@ const tokenSchema = z.object({
   price: z.number(),
   symbol: z.string(),
   total_supply: z.number(), 
-});
+})
 
 const poolDataSchema = z.object({
   address: z.string(),
@@ -64,7 +64,7 @@ const poolDataSchema = z.object({
   tvl: z.number(),
   volume: feesAndVolumeSchema,
   launchpad: z.string().nullable().optional(),
-});
+})
 
 export const apiMeteoraResponseSchema = z.object({
   current_page: z.number().default(1),
@@ -72,6 +72,8 @@ export const apiMeteoraResponseSchema = z.object({
   page_size: z.number(),
   pages: z.number(),
   total: z.number(),
-});
+})
 
-export type ApiMeteoraResponse = z.infer<typeof apiMeteoraResponseSchema>;
+export type MeteoraPool = z.infer<typeof poolDataSchema>
+
+export type ApiMeteoraResponse = z.infer<typeof apiMeteoraResponseSchema>
