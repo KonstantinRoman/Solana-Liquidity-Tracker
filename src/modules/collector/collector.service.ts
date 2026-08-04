@@ -1,4 +1,4 @@
-import { apiMeteoraResponseSchema, MeteoraPool } from '../../types/response.js'
+import { apiMeteoraResponseSchema, MeteoraPool } from '../../types/meteora.shema.js'
 
 const METEORA_URL = 'https://dlmm-api.meteora.ag/pair/all_with_pagination?page=0&limit=50'
 
@@ -31,3 +31,5 @@ export async function collectionMeteoraPools():Promise<MeteoraPool[]> {
 
 	return parseData.data 
 }
+
+
