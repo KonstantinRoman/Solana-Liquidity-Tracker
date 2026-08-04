@@ -1,53 +1,95 @@
+import { REDIS_KEYS } from '../../config/redis.key.js'
 import { Prisma } from '../../generated/prisma/client.js'
 import { prisma } from '../../shared/infrastructure/prisma.js'
-import { redis } from '../../shared/infrastructure/redis.js'
+import { filterUnknownAdresses, redis } from '../../shared/infrastructure/redis.js'
 import { MeteoraPool } from '../../types/meteora.shema.js'
+import { processingPoolData, processingPoolSnapshotData, processingTokenData } from './collector.mapper.js'
 
-function saveCoolectorData(pools: MeteoraPool[]){
-	
+export async function saveCollectorData(pools: MeteoraPool[]) {
+  try {
+    const prismaTokens = processingTokenData(pools)
+    const prismaPools = processingPoolData(pools)
+    const prismaPoolSnapshots = processingPoolSnapshotData(pools)
+
+    await saveTokenData(prismaTokens)
+    await savePoolData(prismaPools)
+    await savePoolSnapshotData(prismaPoolSnapshots)
+  } catch (error) {
+    throw new Error(`Save pool data into DB error: ${error}`)
+  }
 }
 
-async function saveTokenData(prismaTokens: Prisma.TokenCreateManyInput[]){
-	try {
-		const pipeline = redis.pipeline()
+async function saveTokenData(prismaTokens: Prisma.TokenCreateManyInput[]) {
+  if (prismaTokens.length === 0) {
+    console.log('No tokens to process')
+    return
+  }
 
-		prismaTokens.forEach(token => pipeline.sismember('known:tokens', token.address))
+  try {
+    const tokenAddresses = prismaTokens.map(token => token.address)
+    const missingAddresses = await filterUnknownAdresses(REDIS_KEYS.KNOWN_TOKENS, tokenAddresses)
 
-		const results = (await pipeline.exec()) as Array<[Error | null,number]>
+    if (missingAddresses.length === 0) return
 
-		const missingTokens = prismaTokens.filter((token, index) => results[index][1] === 0)
+    const addressSet = new Set(missingAddresses)
+    const missingTokens = prismaTokens.filter(token => addressSet.has(token.address))
 
-		if(missingTokens.length === 0){
-			console.log('All tokens are already known')
-			return
-		}
+    const prismaSaveResult = await prisma.token.createMany({
+      data: missingTokens,
+      skipDuplicates: true
+    })
+    console.log(`Successfully saved tokens into Postgres: ${prismaSaveResult.count}`)
 
-		const newAddresses = missingTokens.map(token => token.address)
-		try {
-			const prismaSaveResult = await prisma.token.createMany({
-				data: missingTokens,
-				skipDuplicates: true
-			})
-
-			console.log(`Succesfull save tokens into Postgress: ${prismaSaveResult.count}`)
-
-			const redisSaveResult = await redis.sadd('known:tokens', ...newAddresses)
-
-			console.log(`Succesfull save token addresses into Redis: ${redisSaveResult} `)
-		} catch (error) {
-			throw new Error(`Save token into db error: ${error}`)
-		}
-
-	} catch (error) {
-		
-	}
-	
+    const redisSaveResult = await redis.sadd(REDIS_KEYS.KNOWN_TOKENS, ...missingAddresses)
+    console.log(`Successfully saved token addresses into Redis: ${redisSaveResult}`)
+  } catch (error) {
+    throw new Error(`Save token into DB error: ${error}`)
+  }
 }
 
-function savePoolData(prismaPools: Prisma.PoolCreateManyInput){
+async function savePoolData(prismaPools: Prisma.PoolCreateManyInput[]) {
+  if (prismaPools.length === 0) {
+    console.log('No pools to process')
+    return
+  }
 
+  try {
+    const poolAddresses = prismaPools.map(pool => pool.address)
+    const missingAddresses = await filterUnknownAdresses(REDIS_KEYS.KNOWN_POOLS, poolAddresses)
+
+    if (missingAddresses.length === 0) {
+      console.log('No pool addresses to save')
+      return
+    }
+
+    const addressSet = new Set(missingAddresses)
+    const missingPools = prismaPools.filter(pool => addressSet.has(pool.address))
+
+    const prismaSaveResult = await prisma.pool.createMany({
+      data: missingPools,
+      skipDuplicates: true
+    })
+    console.log(`Successfully saved pools into Postgres: ${prismaSaveResult.count}`)
+
+    const redisSaveResult = await redis.sadd(REDIS_KEYS.KNOWN_POOLS, ...missingAddresses)
+    console.log(`Successfully saved pool addresses into Redis: ${redisSaveResult}`)
+  } catch (error) {
+    throw new Error(`Save pool into DB error: ${error}`)
+  }
 }
 
-function savePoolSnapshotData(prismaPoolSnapshots: Prisma.PoolCreateManyInput[]){
-	
+async function savePoolSnapshotData(prismaPoolSnapshots: Prisma.PoolSnapshotCreateManyInput[]) {
+  if (prismaPoolSnapshots.length === 0) {
+    console.log('No snapshots to process')
+    return
+  }
+
+  try {
+    const prismaSaveResult = await prisma.poolSnapshot.createMany({
+      data: prismaPoolSnapshots
+    })
+    console.log(`Successfully saved pool snapshots into Postgres: ${prismaSaveResult.count}`)
+  } catch (error) {
+    throw new Error(`Save pool snapshots into DB error: ${error}`)
+  }
 }

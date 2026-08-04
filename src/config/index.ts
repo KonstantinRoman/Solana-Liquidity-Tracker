@@ -6,7 +6,6 @@ const envSchema = z.object({
 	REDIS_URL: z.string().default('redis://localhost:6379'),
 	PORT: z.number().default(3000),
 	NODE_ENV: z.enum(['development', 'production']).default('development'),
-	
 })
 
 export type EnvConfig = z.infer<typeof envSchema>
