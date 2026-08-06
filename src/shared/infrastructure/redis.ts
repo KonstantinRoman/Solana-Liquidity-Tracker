@@ -1,5 +1,6 @@
 import { Redis } from 'ioredis'
 import { env } from '../../config/index.js'
+import { logger } from './logger.js'
 
 export const redis = new Redis(env.REDIS_URL,{
 	maxRetriesPerRequest: null,
@@ -28,9 +29,9 @@ export async function filterUnknownAdresses(key: string, addresses: string[]): P
 }
 
 redis.on('connect', () => {
-	console.log('Redis: connection estabilish')
+	logger.info('Redis: connection estabilish')
 })
 
 redis.on('error', (err) =>{
-	console.error('Redis: Connection error', err.message)
+	logger.info({error: err},'Redis: Connection error')
 })

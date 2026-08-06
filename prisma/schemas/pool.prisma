@@ -1,14 +1,13 @@
 model Pool {
-  id            String  @id @default(uuid())
   address       String  @unique
   name          String
   dex           String  @default("Meteora")
   isBlacklisted Boolean @default(false)
 
-  tokenXId String
-  tokenX   Token  @relation("TokenX", fields: [tokenXId], references: [id])
-  tokenYId String
-  tokenY   Token  @relation("TokenY", fields: [tokenYId], references: [id])
+  tokenXAddress String
+  tokenX        Token  @relation("TokenX", fields: [tokenXAddress], references: [address])
+  tokenYAddress String
+  tokenY        Token  @relation("TokenY", fields: [tokenYAddress], references: [address])
 
   config Json?
 

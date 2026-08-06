@@ -56,7 +56,7 @@ const poolDataSchema = z.object({
   reserve_y: z.string(),
   reward_mint_x: z.string(),
   reward_mint_y: z.string(),
-  tags: z.array(z.string()).min(1),
+  tags: z.array(z.string()),
   token_x: tokenSchema,
   token_x_amount: z.number(),
   token_y: tokenSchema,

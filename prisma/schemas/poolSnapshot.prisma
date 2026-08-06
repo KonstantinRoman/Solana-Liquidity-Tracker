@@ -1,7 +1,7 @@
 model PoolSnapshot {
-  id     String @id @default(uuid())
-  poolId String
-  pool   Pool   @relation(fields: [poolId], references: [id], onDelete: Cascade)
+  id          String @id @default(uuid())
+  poolAddress String
+  pool        Pool   @relation(fields: [poolAddress], references: [address], onDelete: Cascade)
 
   tvl          Float
   currentPrice Float
@@ -25,5 +25,5 @@ model PoolSnapshot {
 
   createAt DateTime @default(now())
 
-  @@index([poolId, createAt])
+  @@index([poolAddress, createAt])
 }

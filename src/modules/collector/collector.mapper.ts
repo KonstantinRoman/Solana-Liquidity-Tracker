@@ -32,8 +32,8 @@ export function processingPoolData(pools: MeteoraPool[]): Prisma.PoolCreateManyI
       name: pool.name,
       isBlacklisted: pool.is_blacklisted,
       config: pool.pool_config,
-    	tokenXId: pool.token_x.address,
-      tokenYId: pool.token_y.address
+    	tokenXAddress: pool.token_x.address,
+      tokenYAddress: pool.token_y.address
     })
   }
 
@@ -45,7 +45,7 @@ export function processingPoolSnapshotData(pools: MeteoraPool[]): Prisma.PoolSna
 
   for (const pool of pools) {
     prismaPoolSnapshotArray.push({
-      poolId: pool.address,
+      poolAddress: pool.address,
       tvl: pool.tvl,
       currentPrice: Number(pool.current_price),
       apr: pool.apr,

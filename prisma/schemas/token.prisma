@@ -1,5 +1,4 @@
 model Token {
-  id                      String   @id @default(uuid())
   address                 String   @unique
   symbol                  String
   name                    String
