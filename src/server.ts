@@ -14,20 +14,20 @@ let isProcessing: boolean = false
 
 const cronTask = cron.schedule('*/5 * * * *', async () => {
   if(isProcessing){
-    logger.warn('Collector already running, skipping this tick')
+    logger.warn('Collector alre ady running, skipping this tick')
     return
   }
   isProcessing = true
   try {
-    logger.info({ phase: 'collector' }, 'Starting data collection...')
-    await runCollector()
-    logger.info({ phase: 'collector' }, 'Data collection finished')
-  } catch (error) {
-    logger.error({ err: error, phase: 'collector' }, 'Error during collection')
-  } finally {
-    isProcessing = false
-  }
-})
+     logger.info({ phase: 'collector' }, 'Starting data collection...')
+     await runCollector()
+     logger.info({ phase: 'collector' }, 'Data collection finished')
+   } catch (error) {
+     logger.error({ err: error, phase: 'collector' }, 'Error during collection')
+   } finally {
+     isProcessing = false
+   }
+},{missedExecutionTolerance: 60_000})
 
 logger.info({ cron: '5min' }, 'Scheduled every 5 minutes')
 

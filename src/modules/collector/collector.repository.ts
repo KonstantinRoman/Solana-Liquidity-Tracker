@@ -3,18 +3,21 @@ import { Prisma } from '../../generated/prisma/client.js'
 import { logger } from '../../shared/infrastructure/logger.js'
 import { prisma } from '../../shared/infrastructure/prisma.js'
 import { filterUnknownAdresses, redis } from '../../shared/infrastructure/redis.js'
+import { PoolFrontendData } from '../../types/frontendResponse.shema.js'
 import { MeteoraPool } from '../../types/meteora.shema.js'
-import { processingPoolData, processingPoolSnapshotData, processingTokenData } from './collector.mapper.js'
+import { processingFrontendPoolData, processingPoolData, processingPoolSnapshotData, processingTokenData } from './collector.mapper.js'
 
 export async function saveCollectorData(pools: MeteoraPool[]) {
   try {
     const prismaTokens = processingTokenData(pools)
     const prismaPools = processingPoolData(pools)
     const prismaPoolSnapshots = processingPoolSnapshotData(pools)
+    const poolFrontendArray = processingFrontendPoolData(pools)
 
     await saveTokenData(prismaTokens)
     await savePoolData(prismaPools)
     await savePoolSnapshotData(prismaPoolSnapshots)
+    await saveFrontendData(poolFrontendArray)
   } catch (error) {
     logger.error({ err: error }, 'Save collector data failed')
     throw new Error(`Save pool data into DB error: ${error}`)
@@ -114,5 +117,23 @@ async function savePoolSnapshotData(prismaPoolSnapshots: Prisma.PoolSnapshotCrea
   } catch (error) {
     logger.error({ err: error, entity: 'pool-snapshot' }, 'Failed to save pool snapshot data')
     throw new Error(`Save pool snapshots into DB error: ${error}`)
+  }
+}
+
+async function saveFrontendData(poolFrontendArray: PoolFrontendData[]) {
+  if(poolFrontendArray.length === 0){
+    logger.info('No frontend data to process')
+    return
+  }
+
+  try {
+    const redisSaveResult = await redis.set(REDIS_KEYS.TOP_POOLS, JSON.stringify(poolFrontendArray))
+
+    logger.info(
+      {count: redisSaveResult,entity: 'pool-frontend-data'},
+      'Succesfully saved pool frontend data into Postgress')
+  } catch (error) {
+    logger.error({err: error, entity: 'pool-frontend-data'},'Failed to save pool frontend data')
+    throw new Error(`Save pool frontend data into Redis DB error: ${error}`)
   }
 }

@@ -1,4 +1,5 @@
 import { Prisma } from '../../generated/prisma/client.js'
+import { PoolFrontendData } from '../../types/frontendResponse.shema.js'
 import { MeteoraPool } from '../../types/meteora.shema.js'
 
 export function processingTokenData(pools: MeteoraPool[]): Prisma.TokenCreateManyInput[] {
@@ -67,6 +68,30 @@ export function processingPoolSnapshotData(pools: MeteoraPool[]): Prisma.PoolSna
       rawMetrics: pool as unknown as Prisma.InputJsonValue
     })
   }
-
+  
   return prismaPoolSnapshotArray
+}
+export function processingFrontendPoolData(pools: MeteoraPool[]): PoolFrontendData[] {
+    const poolFrontendArray: PoolFrontendData[] = [] 
+    for(const pool of pools){
+      poolFrontendArray.push({
+        address: pool.address,
+        name: pool.name,
+        tokenX: {
+          address: pool.token_x.address,
+          symbol: pool.token_x.symbol
+        },
+        tokenY: {
+          address: pool.token_y.address,
+          symbol: pool.token_y.symbol
+        },
+        tvl: pool.tvl,
+        currentPrice: Number(pool.current_price),
+        volume24h: pool.volume['24h'],
+        apy: pool.apy,
+        apr: pool.apr,
+      })   
+    }
+
+  return poolFrontendArray
 }
