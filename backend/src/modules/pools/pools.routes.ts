@@ -7,7 +7,7 @@ import { PoolFrontendDataSchema } from '../../types/frontendResponse.shema.js'
 
 const router = Router()
 
-router.get('/api/pools/top', async (req, res) => {
+router.get('/pools/top', async (req, res) => {
   try {
 
     const limitParam = req.query.limit as string | undefined
@@ -68,7 +68,7 @@ router.get('/pools/:address/history', async (req, res) => {
         createAt: true,
         tvl: true,
         currentPrice: true,
-        volume24h: true,
+        vol24h: true,
         apy: true,
         apr: true,
       },
