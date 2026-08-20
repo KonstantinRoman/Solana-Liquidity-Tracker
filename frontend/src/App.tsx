@@ -1,22 +1,33 @@
-import { Provider } from "@/components/ui/provider"; // Chakra UI v3
+import { ChakraProvider, defaultSystem } from '@chakra-ui/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import React from 'react'
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { PoolDetailPage } from './pages/PoolDetailPage'
 import { PoolsPage } from './pages/PoolPage'
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false
+    }
+  }
+})
 
-export function App() {
+export const App: React.FC = () => {
   return (
     <QueryClientProvider client={queryClient}>
-      <Provider>
+      <ChakraProvider value={defaultSystem}>
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<PoolsPage />} />
-            <Route path="/pool/:address" element={<PoolDetailPage />} />
+            <Route path="/" element={<Navigate to="/pools" replace />} />
+            <Route path="/pools" element={<PoolsPage />} />
+            <Route path="/pools/:address" element={<PoolDetailPage />} />
           </Routes>
         </BrowserRouter>
-      </Provider>
+      </ChakraProvider>
     </QueryClientProvider>
   )
 }
+
+export default App
