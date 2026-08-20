@@ -8,7 +8,8 @@ const envSchema = z.object({
 	PORT: z.coerce.number().default(3000),
 	NODE_ENV: z.enum(['development', 'production']).default('development'),
 	METEORA_CRON_INTERVAL: z.string().default("*/5 * * * *"),
-	LOG_LEVEL: z.string().default('info')
+	LOG_LEVEL: z.string().default('info'),
+	TELEGRAM_BOT_TOKEN: z.string(),
 })
 
 export type EnvConfig = z.infer<typeof envSchema>
