@@ -1,3 +1,4 @@
+import type { Request, Response } from 'express'
 import { Router } from 'express'
 import { REDIS_KEYS } from '../../config/redis.key.js'
 import { logger } from '../../shared/infrastructure/logger.js'
@@ -7,12 +8,11 @@ import { PoolFrontendDataSchema } from '../../types/frontendResponse.shema.js'
 
 const router = Router()
 
-router.get('/pools/top', async (req, res) => {
+router.get('/pools/top', async (req : Request, res : Response) => {
   try {
 
     const limitParam = req.query.limit as string | undefined
     const limit = limitParam ? parseInt(limitParam, 10) : 20
-
     if (isNaN(limit) || limit < 1) {
       return res.status(400).json({ error: 'limit must be a positive integer' })
     }
@@ -41,7 +41,7 @@ router.get('/pools/top', async (req, res) => {
   }
 })
 
-router.get('/pools/:address/history', async (req, res) => {
+router.get('/pools/:address/history', async (req : Request, res : Response) => {
   try {
 
     const address = req.params.address;
@@ -56,6 +56,7 @@ router.get('/pools/:address/history', async (req, res) => {
         error: 'day must be a positive integer between 1 and 30',
       });
     }
+    
 
     const sevenDaysAgo = new Date(Date.now() - day * 24 * 60 * 60 * 1000);
 
