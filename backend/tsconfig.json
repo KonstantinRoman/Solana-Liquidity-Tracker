@@ -12,6 +12,6 @@
     "outDir": "./dist",
     "resolveJsonModule": true,
     "forceConsistentCasingInFileNames": true,
-    "types": ["node"]
+    "types": ["node", "express"]
   }
 }
