@@ -6,8 +6,9 @@ import router from './modules/pools/pools.routes.js'
 export const app = express()
 
 app.use(express.json())
-app.use('/api',router)
 app.use(cors())
+app.use('/api',router)
+
 
 app.get('/health', (req: Request,res: Response) => {
 	res.status(200).json({status: 'ok', timestamp: new Date().toISOString})
