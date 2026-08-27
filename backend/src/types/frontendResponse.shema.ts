@@ -17,7 +17,8 @@ export const PoolFrontendDataSchema = z.object({
   volume24h: z.number().nonnegative(),
   apy: z.number().min(0),
   apr: z.number().min(0),
-  bin_step: z.number().min(0)
+  bin_step: z.number().min(0),
+  fee: z.number().min(0)
 })
 
 export type PoolFrontendData = z.infer<typeof PoolFrontendDataSchema>

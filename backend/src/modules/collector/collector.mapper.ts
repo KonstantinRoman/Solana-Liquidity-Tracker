@@ -90,7 +90,8 @@ export function processingFrontendPoolData(pools: MeteoraPool[]): PoolFrontendDa
         volume24h: pool.volume['24h'],
         apy: pool.apy,
         apr: pool.apr,
-        bin_step: pool.pool_config.bin_step
+        bin_step: pool.pool_config.bin_step,
+        fee: pool.fees['24h']
       })   
     }
 
