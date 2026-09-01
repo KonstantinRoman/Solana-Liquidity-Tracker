@@ -20,3 +20,4 @@ export const usePoolHistory = (address: string) => {
     staleTime: 1000 * 60,
   });
 };
+

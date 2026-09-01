@@ -1,7 +1,8 @@
 import axios from 'axios'
+import 'dotenv'
 
 export const apiClient = axios.create({
-  baseURL: 'http://localhost:3000/api',
+  baseURL: 'https://solana-liquidity-tracker.onrender.com/api',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',

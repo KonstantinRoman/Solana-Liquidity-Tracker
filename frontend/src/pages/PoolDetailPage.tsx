@@ -1,169 +1,88 @@
-import {
-  Box,
-  Button,
-  Flex,
-  Grid,
-  GridItem,
-  Heading,
-  Spinner,
-  Text
-} from '@chakra-ui/react'
-import React from 'react'
+import { Badge, HStack, Heading, Text, VStack } from '@chakra-ui/react'
 import { useNavigate, useParams } from 'react-router-dom'
-import {
-  Area,
-  AreaChart,
-  CartesianGrid,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis
-} from 'recharts'
-import { usePoolHistory } from '../hooks/usePools'
+import { Button } from '../components/common/Button'
+import { Card } from '../components/common/Card'
+import { Loader } from '../components/common/Loader'
+import { Layout } from '../components/layout/Layout'
+import { PoolChart } from '../components/pools/PoolChart'
+import { usePoolHistory, useTopPools } from '../hooks/usePools'
 
-export const PoolDetailPage: React.FC = () => {
+export const PoolDetailPage = () => {
   const { address } = useParams<{ address: string }>()
   const navigate = useNavigate()
-  const { data: history, isLoading, isError, error, refetch } = usePoolHistory(address || '')
 
-  if (!address) {
-    return (
-      <Box p={6}>
-        <Text color="red.500">Invalid pool address parameter</Text>
-        <Button mt={4} onClick={() => navigate('/')}>
-          Back to Pools
-        </Button>
-      </Box>
-    )
-  }
+  const { data: pools } = useTopPools()
+  const { data: history, isLoading, isError } = usePoolHistory(address || '')
 
-  if (isLoading) {
-    return (
-      <Flex justify="center" align="center" minH="400px" direction="column" gap={4}>
-        <Spinner size="xl" color="teal.500" />
-        <Text color="gray.500">Loading historical metrics...</Text>
-      </Flex>
-    )
-  }
-
-  if (isError) {
-    return (
-      <Box p={6} border="1px solid" borderColor="red.300" borderRadius="md" bg="red.50">
-        <Heading size="md" color="red.600" mb={2}>
-          Error Loading History
-        </Heading>
-        <Text color="red.500" mb={4}>
-          {error?.message || 'Failed to fetch historical snapshot data for this pool.'}
-        </Text>
-        <Button colorScheme="red" onClick={() => refetch()}>
-          Retry Request
-        </Button>
-      </Box>
-    )
-  }
-
-  const formattedHistory = history?.map((point) => ({
-    ...point,
-    formattedTime: new Date(point.timestamp).toLocaleTimeString([], {
-      hour: '2-digit',
-      minute: '2-digit'
-    })
-  })) || []
-
-  const latestSnapshot = history && history.length > 0 ? history[history.length - 1] : null
+  const pool = pools?.find((p) => p.address === address)
+  const isDlmm = pool?.binStep !== undefined && pool.binStep > 0
 
   return (
-    <Box p={6}>
-      <Button mb={6} variant="outline" onClick={() => navigate('/')}>
-        ← Back to All Pools
+    <Layout>
+      <Button mb={6} onClick={() => navigate('/')} variant="outline">
+        ← Назад к списку
       </Button>
 
-      <Flex justify="space-between" align="center" mb={6} wrap="wrap" gap={4}>
-        <Box>
-          <Heading size="lg" mb={1}>
-            Pool Historical Analytics
-          </Heading>
-          <Text color="gray.500" fontSize="sm">
-            Address: {address}
-          </Text>
-        </Box>
-        {latestSnapshot && (
-          <Flex gap={4}>
-            <Box p={3} bg="gray.50" borderRadius="md" border="1px solid" borderColor="gray.200">
-              <Text fontSize="xs" color="gray.500">Latest TVL</Text>
-              <Text fontWeight="bold" fontSize="lg">
-                ${latestSnapshot.tvl.toLocaleString('en-US', { maximumFractionDigits: 2 })}
-              </Text>
-            </Box>
-            <Box p={3} bg="gray.50" borderRadius="md" border="1px solid" borderColor="gray.200">
-              <Text fontSize="xs" color="gray.500">Latest Volume</Text>
-              <Text fontWeight="bold" fontSize="lg">
-                ${latestSnapshot.volume.toLocaleString('en-US', { maximumFractionDigits: 2 })}
-              </Text>
-            </Box>
-          </Flex>
-        )}
-      </Flex>
+      {isLoading && <Loader label="Загрузка истории..." />}
+      {isError && (
+        <Card color="red.400" textAlign="center">
+          Ошибка загрузки графика
+        </Card>
+      )}
 
-      <Grid templateColumns={{ base: '1fr', lg: '1fr 1fr' }} gap={6}>
-        <GridItem bg="white" p={5} borderRadius="lg" border="1px solid" borderColor="gray.200">
-          <Heading size="sm" mb={4} color="gray.700">
-            TVL Dynamics
-          </Heading>
-          <Box h="300px" w="100%">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={formattedHistory}>
-                <defs>
-                  <linearGradient id="tvlGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#319795" stopOpacity={0.8} />
-                    <stop offset="95%" stopColor="#319795" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="formattedTime" />
-                <YAxis />
-                <Tooltip />
-                <Area
-                  type="monotone"
-                  dataKey="tvl"
-                  stroke="#319795"
-                  fillOpacity={1}
-                  fill="url(#tvlGradient)"
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </Box>
-        </GridItem>
+      {!isLoading && (
+        <VStack spaceY={6} align="stretch">
+          <Card>
+            <HStack justify="space-between" align="center" mb={6}>
+              <VStack align="start" spaceY={1}>
+                <Heading size="xl">{pool?.name || 'Pool Detail'}</Heading>
+                <Text color="gray.500" fontSize="xs" fontFamily="mono">
+                  {pool?.address}
+                </Text>
+              </VStack>
+              <Badge colorPalette={isDlmm ? 'purple' : 'blue'} size="lg">
+                {isDlmm ? `DLMM (${pool.binStep})` : 'Standard'}
+              </Badge>
+            </HStack>
 
-        <GridItem bg="white" p={5} borderRadius="lg" border="1px solid" borderColor="gray.200">
-          <Heading size="sm" mb={4} color="gray.700">
-            Volume Dynamics
-          </Heading>
-          <Box h="300px" w="100%">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={formattedHistory}>
-                <defs>
-                  <linearGradient id="volGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#805AD5" stopOpacity={0.8} />
-                    <stop offset="95%" stopColor="#805AD5" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="formattedTime" />
-                <YAxis />
-                <Tooltip />
-                <Area
-                  type="monotone"
-                  dataKey="volume"
-                  stroke="#805AD5"
-                  fillOpacity={1}
-                  fill="url(#volGradient)"
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </Box>
-        </GridItem>
-      </Grid>
-    </Box>
+            <HStack spaceX={8} flexWrap="wrap">
+              <VStack align="start">
+                <Text color="gray.400" fontSize="sm">Current Price</Text>
+                <Text fontSize="xl" fontWeight="bold">
+                  ${pool?.currentPrice ? pool.currentPrice.toFixed(4) : '—'}
+                </Text>
+              </VStack>
+              <VStack align="start">
+                <Text color="gray.400" fontSize="sm">TVL</Text>
+                <Text fontSize="xl" fontWeight="bold">
+                  ${pool?.tvl ? pool.tvl.toLocaleString('en-US', { maximumFractionDigits: 0 }) : '—'}
+                </Text>
+              </VStack>
+              <VStack align="start">
+                <Text color="gray.400" fontSize="sm">24h Volume</Text>
+                <Text fontSize="xl" fontWeight="bold">
+                  ${pool?.volume24h ? pool.volume24h.toLocaleString('en-US', { maximumFractionDigits: 0 }) : '—'}
+                </Text>
+              </VStack>
+              <VStack align="start">
+                <Text color="gray.400" fontSize="sm">24h Fees</Text>
+                <Text fontSize="xl" fontWeight="bold" color="teal.300">
+                  ${pool?.fee ? pool.fee.toLocaleString('en-US', { maximumFractionDigits: 0 }) : '—'}
+                </Text>
+              </VStack>
+              <VStack align="start">
+                <Text color="gray.400" fontSize="sm">APY</Text>
+                <Text fontSize="xl" fontWeight="bold" color="green.400">
+                  {pool?.apy ? `${pool.apy.toFixed(1)}%` : '—'}
+                </Text>
+              </VStack>
+            </HStack>
+          </Card>
+
+          <Heading size="md" color="gray.300">Динамика TVL</Heading>
+          <PoolChart data={history || []} />
+        </VStack>
+      )}
+    </Layout>
   )
 }

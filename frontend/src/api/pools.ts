@@ -1,15 +1,13 @@
-import { Pool, PoolHistoryPoint, TopPoolsResponse } from '../types/pool.types'
+import { Pool, PoolHistoryPoint, PoolHistoryResponse, TopPoolsResponse } from '../types/pool.types'
 import { apiClient } from './client'
 
 export const fetchTopPools = async (): Promise<Pool[]> => {
-  const response = await apiClient.get<TopPoolsResponse | Pool[]>('/pools/top')
-  if (Array.isArray(response.data)) {
-    return response.data
-  }
-  return response.data.pools
+  const response = await apiClient.get<TopPoolsResponse>('/pools/top')
+  console.log('DATA FROM BACKEND:', response.data)
+  return response.data.result
 }
 
 export const fetchPoolHistory = async (address: string): Promise<PoolHistoryPoint[]> => {
-  const response = await apiClient.get<PoolHistoryPoint[]>(`/pools/${address}/history`)
-  return response.data
+  const response = await apiClient.get<PoolHistoryResponse>(`/pools/${address}/history`)
+  return response.data.history
 }
