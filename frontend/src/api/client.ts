@@ -1,5 +1,5 @@
 import axios from 'axios'
-import 'dotenv'
+
 
 export const apiClient = axios.create({
   baseURL: 'https://solana-liquidity-tracker.onrender.com/api',

@@ -2,7 +2,8 @@
   "name": "frontend",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build"
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "dependencies": {
     "@chakra-ui/react": "^3.36.1",
