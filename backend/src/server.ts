@@ -1,7 +1,9 @@
 import cron from 'node-cron'
 import { app } from './app.js'
 import { env } from './config/index.js'
+import { runAnomalyAnalysisJob } from './modules/analyzer/analyzer.api.js'
 import { runCollector } from './modules/collector/collector.api.js'
+import { bootstrap } from './modules/notifications/index.js'
 import { logger } from './shared/infrastructure/logger.js'
 import { prisma } from './shared/infrastructure/prisma.js'
 import { redis } from './shared/infrastructure/redis.js'
@@ -28,6 +30,13 @@ const cronTask = cron.schedule('*/5 * * * *', async () => {
      isProcessing = false
    }
 },{missedExecutionTolerance: 60_000})
+
+cron.schedule('0 */4 * * *', async () => {
+  console.log('⏰ [CRON] Запуск планового анализа аномалий...')
+  await runAnomalyAnalysisJob(4)
+})
+
+bootstrap()
 
 logger.info({ cron: '5min' }, 'Scheduled every 5 minutes')
 

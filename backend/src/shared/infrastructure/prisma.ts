@@ -1,8 +1,9 @@
 import { PrismaPg } from '@prisma/adapter-pg'
-import 'dotenv/config'
+import { env } from '../../config/index.js'
 import { PrismaClient } from '../../generated/prisma/client.js'
 
-const databaseUrl = process.env.DATABASE_URL
+
+const databaseUrl = env.DATABASE_URL
 
 if(!databaseUrl){
 	throw new Error('Database URL was not recived')
