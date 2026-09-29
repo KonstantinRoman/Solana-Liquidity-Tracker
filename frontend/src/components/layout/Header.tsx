@@ -10,7 +10,7 @@ export const Header = () => {
         Мониторинг TVL и объемов DLMM пулов Meteora
       </Text>
       <Link
-        href="https://t.me/your_bot_username"
+        href="https://t.me/solana_liq_tracker_dev_bot"
         target="_blank"
         color="teal.400"
         fontSize="sm"

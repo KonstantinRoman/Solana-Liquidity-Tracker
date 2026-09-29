@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { fetchPoolHistory, fetchTopPools } from '../api/pools.ts'
-import { Pool, PoolHistoryPoint } from '../types/pool.types'
+import { Pool, PoolHistoryPoint } from '../types/pool.types.ts'
 
 export const useTopPools = () => {
   return useQuery<Pool[], Error>({
